@@ -1,0 +1,52 @@
+name: Sync Apps Submodule
+
+on:
+  push:
+    branches:
+      - main
+    # Don't trigger on submodule updates to avoid loops
+    paths-ignore:
+      - 'apps/**'
+  workflow_dispatch: # Allow manual triggering
+  # Also trigger when community apps repo has new commits
+  repository_dispatch:
+    types: [community-apps-updated]
+
+jobs:
+  sync-submodule:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Update submodule to latest
+        run: |
+          git submodule update --remote --merge apps
+      
+      - name: Check if submodule has changes
+        id: check-changes
+        run: |
+          cd apps
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "✅ Submodule has updates"
+          else
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "ℹ️ Submodule is already up to date"
+          fi
+      
+      - name: Commit and push submodule update
+        if: steps.check-changes.outputs.has_changes == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add apps
+          git commit -m "chore: sync apps submodule from community repository" || exit 0
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+

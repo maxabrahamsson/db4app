@@ -1,0 +1,3 @@
+[submodule "apps"]
+	path = apps
+	url = https://github.com/maxabrahamsson/db4app-community-apps.git

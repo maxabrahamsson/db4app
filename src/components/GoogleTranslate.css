@@ -1,0 +1,135 @@
+.google-translate-wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  min-height: 32px;
+  vertical-align: middle;
+  cursor: pointer;
+  position: relative;
+}
+
+.translate-label {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+  color: var(--color-text-main);
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  padding: 0.5rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  transition: all 0.2s ease;
+  position: relative;
+  z-index: 1;
+  pointer-events: none; /* Let clicks pass through to the overlay */
+  flex-shrink: 0;
+  background: var(--color-bg-canvas);
+}
+
+.translate-label:hover {
+  background: var(--color-bg-subtle);
+  border-color: var(--color-accent);
+}
+
+.translate-icon {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.translate-text {
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+}
+
+/* Hide Google Translate banner and default icon */
+.goog-te-banner-frame {
+  display: none !important;
+}
+
+/* Hide the Google logo/icon */
+.goog-te-gadget-icon {
+  display: none !important;
+}
+
+/* Hide any text that Google adds */
+.goog-te-gadget-simple .goog-te-gadget-text {
+  display: none !important;
+}
+
+/* Position the select element over the entire wrapper for clickability */
+#google_translate_element {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  opacity: 0 !important;
+  z-index: 10 !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+#google_translate_element select {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  opacity: 0 !important;
+  cursor: pointer !important;
+  border: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  pointer-events: auto !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+}
+
+/* Hide the combo visually but keep it functional - cover entire wrapper */
+.goog-te-combo {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  opacity: 0 !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Ensure the gadget container also covers the full area */
+.goog-te-gadget {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  pointer-events: auto !important;
+}
+
+.goog-te-gadget-simple {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  pointer-events: auto !important;
+}
+

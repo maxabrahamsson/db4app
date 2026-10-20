@@ -1,0 +1,10 @@
+# Artillery reports
+artillery-report.json
+artillery-report.html
+
+# Test results
+*.json
+*.html
+
+# Logs
+*.log

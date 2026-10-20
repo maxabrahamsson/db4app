@@ -1,0 +1,32 @@
+{
+  "name": "db4app-relay-desktop",
+  "private": true,
+  "version": "0.1.0",
+  "description": "DB4 Self-Hosted Relay Desktop App",
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently \"vite\" \"npm run dev --prefix ../..\"",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "tauri": "tauri",
+    "build:sidecar": "node scripts/build-sidecar.js",
+    "tauri:dev": "npm run build:sidecar && tauri dev",
+    "tauri:build": "npm run build:sidecar && tauri build"
+  },
+  "dependencies": {
+    "@electric-sql/pglite": "^0.3.15",
+    "@electric-sql/pglite-socket": "^0.0.20",
+    "@tauri-apps/api": "^2",
+    "@tauri-apps/plugin-opener": "^2",
+    "@tauri-apps/plugin-shell": "^2",
+    "ws": "^8.19.0"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2",
+    "concurrently": "^9.2.1",
+    "esbuild": "^0.24.0",
+    "pkg": "^5.8.1",
+    "typescript": "~5.6.2",
+    "vite": "^6.0.3"
+  }
+}

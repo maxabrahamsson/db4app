@@ -1,0 +1,63 @@
+# Self-host the db4app relay.
+#
+#   docker compose up -d --build
+#
+# The relay listens on:
+#   8787  HTTP/WebSocket (browser tab connects to ws://<host>:8787/agent)
+#   6543  Postgres wire protocol (psql "postgres://postgres:AUTH_TOKEN@<host>:6543/CONNECTION_ID")
+#
+# Optional: expose the relay publicly through a Cloudflare Tunnel with
+#   TUNNEL_TOKEN=... docker compose --profile tunnel up -d
+services:
+  relay:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: db4app-relay:latest
+    container_name: db4app-relay
+    restart: unless-stopped
+    environment:
+      - RELAY_PORT=8787
+      - RELAY_PG_PORT=6543
+      - RELAY_TIMEOUT=15000
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173,https://db4.lab4.app}
+      # Optional SNI routing domain (clients connect to CONNECTION_ID.<domain>); needs TLS certs below
+      - RELAY_PG_DOMAIN=${RELAY_PG_DOMAIN:-}
+      # Optional: comma-separated CIDRs / IPs that bypass rate limiting
+      - TRUSTED_CIDRS=${TRUSTED_CIDRS:-}
+      - RATE_LIMIT_ALLOWLIST=${RATE_LIMIT_ALLOWLIST:-}
+      # Optional, opt-in telemetry (disabled unless POSTHOG_API_KEY is set)
+      - POSTHOG_API_KEY=${POSTHOG_API_KEY:-}
+      - POSTHOG_HOST=${POSTHOG_HOST:-}
+    # Optional TLS for the Postgres port: mount a cert/key pair at /etc/tls
+    # volumes:
+    #   - ./certs:/etc/tls:ro
+    ports:
+      - "8787:8787"
+      - "6543:6543"
+    networks:
+      - db4app-network
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:8787/health', (r) => { process.exit(r.statusCode === 200 ? 0 : 1) }).on('error', () => process.exit(1))"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+
+  # Optional public exposure via Cloudflare Tunnel. Only started with --profile tunnel.
+  cloudflared:
+    profiles: ["tunnel"]
+    image: cloudflare/cloudflared:latest
+    container_name: db4app-cloudflared
+    restart: unless-stopped
+    command: tunnel run
+    environment:
+      - TUNNEL_TOKEN=${TUNNEL_TOKEN:-}
+    depends_on:
+      - relay
+    networks:
+      - db4app-network
+
+networks:
+  db4app-network:
+    driver: bridge

@@ -1,0 +1,32 @@
+{
+  "name": "db4app-pg-ws-proxy",
+  "version": "1.0.0",
+  "description": "TCP-to-WebSocket proxy for the Postgres protocol to a self-hosted db4app relay",
+  "main": "index.js",
+  "bin": {
+    "db4app-pg-ws-proxy": "./index.js"
+  },
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [
+    "postgres",
+    "websocket",
+    "proxy",
+    "tunnel",
+    "db4app"
+  ],
+  "author": "AbramsLabs",
+  "license": "MIT",
+  "homepage": "https://github.com/maxabrahamsson/db4app",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/maxabrahamsson/db4app.git",
+    "directory": "packages/pg-ws-proxy"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}
+

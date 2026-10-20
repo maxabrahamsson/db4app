@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" href="/src/assets/icon.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DB4 Self-Hosted Relay</title>
+  <script type="module" src="/src/main.ts" defer></script>
+  <link rel="stylesheet" href="/src/styles.css" />
+</head>
+
+<body>
+  <div id="main-screen">
+    <div class="container">
+      <header>
+        <h1>🔌 DB4 Self-Hosted Relay</h1>
+        <p class="subtitle">Connect desktop apps to your browser database</p>
+      </header>
+
+      <main>
+        <section class="status-section">
+          <div class="status-indicator" id="status-indicator">
+            <span class="status-dot"></span>
+            <span class="status-text" id="status-text">Stopped</span>
+          </div>
+        </section>
+
+        <section class="config-section" style="display: none;">
+          <div class="config-row">
+            <div class="port-label">
+              <label for="http-port">HTTP Port</label>
+              <span class="connection-badge" id="http-badge">Browser</span>
+            </div>
+            <input type="number" id="http-port" value="8787" min="1024" max="65535" />
+          </div>
+          <div class="config-row">
+            <div class="port-label">
+              <label for="pg-port">Postgres Port</label>
+              <span class="connection-badge" id="pg-badge">Client</span>
+            </div>
+            <input type="number" id="pg-port" value="5432" min="1024" max="65535" />
+          </div>
+        </section>
+
+        <!-- Embedded View FIRST -->
+        <section class="embedded-view hidden" id="embedded-view">
+          <iframe id="mfe-iframe" title="Database Connection" scrolling="no"></iframe>
+        </section>
+
+        <!-- Actions section SECOND (Below) -->
+        <section class="actions-section">
+          <button id="toggle-btn" class="primary-btn">
+            Start Relay Server
+          </button>
+        </section>
+
+      </main>
+
+      <footer>
+        <button id="theme-toggle" class="theme-toggle" title="Switch theme">
+          <span class="icon">🌙</span>
+        </button>
+        <p>A <a href="https://lab4.app" target="_blank">Lab4</a> project</p>
+      </footer>
+    </div>
+  </div>
+
+</body>
+
+</html>

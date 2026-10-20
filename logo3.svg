@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+
+    <!-- Gear: metallic silver -->
+    <radialGradient id="gearGrad" cx="36%" cy="32%" r="58%">
+      <stop offset="0%"   stop-color="#eaf2f8"/>
+      <stop offset="42%"  stop-color="#b2c5d2"/>
+      <stop offset="100%" stop-color="#6a8898"/>
+    </radialGradient>
+
+    <!-- "4" body: dark navy-left → dark teal-green right -->
+    <linearGradient id="fourGrad" gradientUnits="userSpaceOnUse"
+                    x1="95" y1="256" x2="410" y2="256">
+      <stop offset="0%"   stop-color="#0c1e30"/>
+      <stop offset="25%"  stop-color="#163c54"/>
+      <stop offset="55%"  stop-color="#1b4e3c"/>
+      <stop offset="85%"  stop-color="#153828"/>
+      <stop offset="100%" stop-color="#0e2420"/>
+    </linearGradient>
+    <!-- top-bevel sheen -->
+    <linearGradient id="sheen" gradientUnits="userSpaceOnUse"
+                    x1="252" y1="68" x2="252" y2="445">
+      <stop offset="0%"   stop-color="#5a9aaa" stop-opacity="0.50"/>
+      <stop offset="15%"  stop-color="#2a6070" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.20"/>
+    </linearGradient>
+
+    <!-- Flask glass -->
+    <linearGradient id="flaskGrad" gradientUnits="userSpaceOnUse"
+                    x1="73" y1="260" x2="223" y2="260">
+      <stop offset="0%"   stop-color="#dcf8ec"/>
+      <stop offset="14%"  stop-color="#7dd4a4"/>
+      <stop offset="50%"  stop-color="#289450"/>
+      <stop offset="100%" stop-color="#124e28"/>
+    </linearGradient>
+    <linearGradient id="neckGrad" gradientUnits="userSpaceOnUse"
+                    x1="126" y1="124" x2="164" y2="124">
+      <stop offset="0%"   stop-color="#c4eede"/>
+      <stop offset="22%"  stop-color="#58c87e"/>
+      <stop offset="65%"  stop-color="#1c7840"/>
+      <stop offset="100%" stop-color="#0e4820"/>
+    </linearGradient>
+    <linearGradient id="liquidGrad" gradientUnits="userSpaceOnUse"
+                    x1="78" y1="335" x2="218" y2="335">
+      <stop offset="0%"   stop-color="#aaeecc"/>
+      <stop offset="20%"  stop-color="#40bc6c"/>
+      <stop offset="60%"  stop-color="#1c9850"/>
+      <stop offset="100%" stop-color="#105828"/>
+    </linearGradient>
+
+    <!-- Shadows -->
+    <filter id="shadowFour" x="-20%" y="-12%" width="140%" height="130%">
+      <feDropShadow dx="4" dy="7" stdDeviation="10"
+                    flood-color="#000000" flood-opacity="0.50"/>
+    </filter>
+    <filter id="shadowMed" x="-14%" y="-10%" width="130%" height="125%">
+      <feDropShadow dx="2" dy="4" stdDeviation="6"
+                    flood-color="#000000" flood-opacity="0.28"/>
+    </filter>
+
+  </defs>
+
+  <!-- ════ LAYER 1 — Erlenmeyer Flask (backmost, left) ════ -->
+  <path d="M 126,55 L 164,55 L 164,192 C 164,220 223,248 223,266 L 223,403 A 75,30 0 0 1 73,403 L 73,266 C 73,248 126,220 126,192 Z"
+        fill="url(#flaskGrad)" stroke="#081810" stroke-width="9"
+        stroke-linejoin="round" filter="url(#shadowMed)"/>
+  <path d="M 78,276 C 78,260 126,250 126,250 L 164,250 C 164,250 218,260 218,276 L 218,400 A 70,27 0 0 1 78,400 Z" fill="url(#liquidGrad)" opacity="0.88"/>
+  <rect x="126" y="55" width="38" height="138" fill="url(#neckGrad)"/>
+  <rect x="129" y="59" width="11" height="130" rx="3" fill="white" opacity="0.30"/>
+  <ellipse cx="94" cy="320" rx="9" ry="54" fill="white" opacity="0.16"/>
+  <rect x="121" y="51" width="48" height="14" rx="5"
+        fill="#1a3e28" stroke="#081810" stroke-width="3"/>
+
+  <!-- ════ LAYER 2 — Gear (right side, behind "4") ════ -->
+  <path d="M 340.2,153.4 L 341.0,115.9 A 155,155 0 0 1 375.0,115.9 L 375.8,153.4 L 400.9,160.1 L 420.3,128.1 A 155,155 0 0 1 449.8,145.1 L 431.8,177.9 L 450.1,196.2 L 482.9,178.2 A 155,155 0 0 1 499.9,207.7 L 467.9,227.1 L 474.6,252.2 L 512.1,253.0 A 155,155 0 0 1 512.1,287.0 L 474.6,287.8 L 467.9,312.9 L 499.9,332.3 A 155,155 0 0 1 482.9,361.8 L 450.1,343.8 L 431.8,362.1 L 449.8,394.9 A 155,155 0 0 1 420.3,411.9 L 400.9,379.9 L 375.8,386.6 L 375.0,424.1 A 155,155 0 0 1 341.0,424.1 L 340.2,386.6 L 315.1,379.9 L 295.7,411.9 A 155,155 0 0 1 266.2,394.9 L 284.2,362.1 L 265.9,343.8 L 233.1,361.8 A 155,155 0 0 1 216.1,332.3 L 248.1,312.9 L 241.4,287.8 L 203.9,287.0 A 155,155 0 0 1 203.9,253.0 L 241.4,252.2 L 248.1,227.1 L 216.1,207.7 A 155,155 0 0 1 233.1,178.2 L 265.9,196.2 L 284.2,177.9 L 266.2,145.1 A 155,155 0 0 1 295.7,128.1 L 315.1,160.1 Z M 400.0,270.0 A 42,42 0 1 0 316.0,270.0 A 42,42 0 1 0 400.0,270.0 Z"
+        fill="url(#gearGrad)" fill-rule="evenodd"
+        stroke="#8aa8b8" stroke-width="2.5"
+        filter="url(#shadowMed)"/>
+
+  <!-- ════ LAYER 3 — "4" numeral (front) ════
+    Single unified path with evenodd fill rule.
+    Outer contour (CW) + triangular window (CCW) = proper "4" silhouette.
+    paint-order="stroke fill" → stroke renders BEHIND fill so the
+    stroke extends outward, creating a clean dark outer border. -->
+  <path d="M 95,68 L 410,68 L 410,445 L 305,445 L 305,305 L 95,305 Z M 305,68 L 200,68 L 305,250 Z"
+        fill="url(#fourGrad)" fill-rule="evenodd"
+        stroke="#050e1a" stroke-width="18"
+        stroke-linejoin="round"
+        paint-order="stroke fill"
+        filter="url(#shadowFour)"/>
+
+  <!-- Bevel sheen overlay on "4" -->
+  <path d="M 95,68 L 410,68 L 410,445 L 305,445 L 305,305 L 95,305 Z M 305,68 L 200,68 L 305,250 Z" fill="url(#sheen)" fill-rule="evenodd"/>
+
+</svg>

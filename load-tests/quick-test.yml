@@ -1,0 +1,32 @@
+config:
+  target: "ws://localhost:8787"  # override with --target
+  http:
+    http2: false
+  phases:
+    - duration: 30
+      arrivalRate: 10
+      name: "Quick Check - 10 connections/sec"
+  processor: "./processors/connection-id.js"
+  plugins:
+    expect: {}
+    metrics-by-endpoint:
+      stripQueryString: true
+  ws:
+    subprotocols: []
+    headers:
+      Origin: "http://localhost:5173"
+
+scenarios:
+  - name: "Browser WebSocket Connection"
+    weight: 100
+    engine: ws
+    flow:
+      - connect:
+          url: "/agent"
+      - think: 1
+      - send:
+          json:
+            type: "agent_ready"
+            connectionId: "{{ connectionId }}"
+      - think: 2
+      - close: {}

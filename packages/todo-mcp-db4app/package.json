@@ -1,0 +1,58 @@
+{
+  "name": "db4app-todo-mcp-server",
+  "version": "0.1.0",
+  "description": "MCP server for db4app todo list app - enables LLMs to manage todos via Model Context Protocol",
+  "type": "module",
+  "main": "./dist/index.js",
+  "bin": {
+    "db4app-todo-mcp-server": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "esbuild src/index.js --bundle --platform=node --format=esm --outfile=dist/index.js --external:node:* --external:pg --external:pg-native",
+    "lint": "eslint src --ext .js",
+    "prepublishOnly": "npm run build",
+    "start": "node dist/index.js"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "postgres",
+    "pglite",
+    "wasm",
+    "browser-database",
+    "llm",
+    "ai",
+    "todo",
+    "tasks"
+  ],
+  "author": "db4app",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/maxabrahamsson/db4app.git",
+    "directory": "packages/todo-mcp-db4app"
+  },
+  "homepage": "https://github.com/maxabrahamsson/db4app",
+  "bugs": {
+    "url": "https://github.com/maxabrahamsson/db4app/issues"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.22.0",
+    "pg": "^8.11.3",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.2",
+    "eslint": "^9.39.1"
+  }
+}
+
+

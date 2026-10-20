@@ -1,0 +1,49 @@
+{
+  "name": "db4app-relay-local",
+  "version": "0.1.0",
+  "description": "Self-hosted relay server for db4app - connect desktop Postgres clients to your browser-based database",
+  "type": "module",
+  "bin": {
+    "db4app-relay": "./bin/relay.js",
+    "db4app-relay-local": "./bin/relay.js"
+  },
+  "main": "./bin/relay.js",
+  "scripts": {
+    "start": "node bin/relay.js"
+  },
+  "keywords": [
+    "postgres",
+    "postgresql",
+    "pglite",
+    "wasm",
+    "relay",
+    "db4app",
+    "self-hosted",
+    "database",
+    "browser",
+    "cli"
+  ],
+  "author": "Max Abrahamsson",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/maxabrahamsson/db4app.git",
+    "directory": "packages/relay-cli"
+  },
+  "homepage": "https://github.com/maxabrahamsson/db4app",
+  "bugs": {
+    "url": "https://github.com/maxabrahamsson/db4app/issues"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  },
+  "files": [
+    "bin/",
+    "README.md",
+    "LICENSE"
+  ]
+}
+

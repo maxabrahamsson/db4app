@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <!-- Soft drop shadow for the rounded card background -->
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="10" stdDeviation="15"
+                    flood-color="#000000" flood-opacity="0.1"/>
+    </filter>
+  </defs>
+
+  <!-- ── Rounded card background ── -->
+  <rect x="50" y="50" width="400" height="400" rx="80"
+        fill="#F4F4F6" filter="url(#shadow)"/>
+
+  <!-- ── Three stacked window panes (back → middle → front) ──
+       Each offset by 30px right/down to create a layered depth effect. -->
+  <!-- Back pane (drawn first = furthest back) -->
+  <rect x="115" y="125" width="210" height="190" rx="15"
+        fill="#F4F4F6" stroke="#3b82f6" stroke-width="12.5"/>
+  <!-- Front-offset pane (drawn second = behind middle) -->
+  <rect x="175" y="185" width="210" height="190" rx="15"
+        fill="#F4F4F6" stroke="#3b82f6" stroke-width="12.5"/>
+  <!-- Middle pane (drawn last among rects = appears on top) -->
+  <rect x="145" y="155" width="210" height="190" rx="15"
+        fill="#F4F4F6" stroke="#3b82f6" stroke-width="12.5"/>
+
+  <!-- ── Cursor / click-pointer arrow on the front pane ── -->
+  <path d="M 220 190  L 220 275  L 240 255
+           L 255 295  L 272.5 287.5  L 257.5 247.5  L 285 247.5 Z"
+        fill="#3b82f6" stroke="#3b82f6"
+        stroke-width="7.5" stroke-linejoin="round"/>
+
+  <!-- ── "4" numeral badge — anchored top-right of the front pane ── -->
+  <text x="365" y="165"
+        font-family="system-ui, -apple-system, sans-serif"
+        font-weight="800" font-size="80"
+        fill="#3b82f6">4</text>
+
+</svg>

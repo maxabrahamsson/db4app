@@ -1,0 +1,61 @@
+:root {
+  font-family: 'Inter', 'Soehne', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  
+  /* Brand Colors - Universal Server Palette */
+  --color-primary: #2563EB;    /* The 'db' Blue - Control Blue */
+  --color-accent: #F59E0B;      /* The '4' Amber - Instant Amber */
+  
+  /* Text & Backgrounds - Light Mode */
+  --color-text-main: #1E293B;  /* Deep Slate */
+  --color-text-muted: #64748B;  /* Muted Blue-Gray */
+  --color-bg-canvas: #FFFFFF;   /* Canvas White */
+  --color-bg-subtle: #F1F5F9;   /* Cloud Gray */
+  
+  /* Legacy variables for compatibility */
+  --accent: var(--color-primary);
+  --muted: var(--color-text-muted);
+  --surface: var(--color-bg-subtle);
+  --border: rgba(30, 41, 59, 0.1);
+  --danger: #EF4444;
+  --text: var(--color-text-main);
+  
+  /* Set default colors */
+  color: var(--color-text-main);
+  background-color: var(--color-bg-canvas);
+}
+
+/* Dark Mode */
+[data-theme="dark"] {
+  --color-text-main: #F1F5F9;  /* Light Slate */
+  --color-text-muted: #94A3B8;  /* Lighter Blue-Gray */
+  --color-bg-canvas: #0F172A;   /* Dark Slate */
+  --color-bg-subtle: #1E293B;   /* Darker Slate */
+  --border: rgba(241, 245, 249, 0.1);
+  --text: var(--color-text-main);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--color-bg-canvas);
+}
+
+#root {
+  width: 100%;
+}
+
+a {
+  color: var(--accent);
+}

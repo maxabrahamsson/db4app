@@ -1,0 +1,36 @@
+{
+    "name": "@db4app/client-sdk",
+    "version": "0.1.0",
+    "description": "Universal Client SDK for db4app relay connections",
+    "main": "./dist/index.js",
+    "module": "./dist/index.mjs",
+    "types": "./dist/index.d.ts",
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "build": "tsup src/index.ts --format cjs,esm --dts",
+        "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
+        "lint": "eslint ."
+    },
+    "keywords": [
+        "postgres",
+        "pglite",
+        "relay",
+        "wasm"
+    ],
+    "author": "",
+    "license": "MIT",
+    "devDependencies": {
+        "@types/node": "^20.0.0",
+        "@types/ws": "^8.5.10",
+        "tsup": "^8.0.0",
+        "typescript": "^5.0.0"
+    },
+    "dependencies": {
+        "ws": "^8.16.0"
+    },
+    "peerDependencies": {
+        "@electric-sql/pglite": ">=0.2.0"
+    }
+}

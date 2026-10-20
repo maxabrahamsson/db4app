@@ -1,0 +1,157 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <!-- Arc gradient: light blue (left) → light yellow (right) -->
+    <linearGradient id="arcGrad" gradientUnits="userSpaceOnUse"
+                    x1="-55" y1="250" x2="455" y2="250">
+      <stop offset="0%"   stop-color="#7abcf0"/>
+      <stop offset="50%"  stop-color="#a8d4f5"/>
+      <stop offset="100%" stop-color="#f5d878"/>
+    </linearGradient>
+
+    <!-- Blue disc side wall -->
+    <linearGradient id="blueBodyGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#3a68b0"/>
+      <stop offset="30%"  stop-color="#6aa3e0"/>
+      <stop offset="60%"  stop-color="#5590d0"/>
+      <stop offset="100%" stop-color="#2a5090"/>
+    </linearGradient>
+
+    <!-- Blue top face — slim shimmer at near edge, smooth fade toward far edge -->
+    <linearGradient id="blueTopGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%"   stop-color="#c8eaff"/>
+      <stop offset="8%"   stop-color="#8ab8e8"/>
+      <stop offset="25%"  stop-color="#5288cc"/>
+      <stop offset="55%"  stop-color="#3468b0"/>
+      <stop offset="100%" stop-color="#2a50a0"/>
+    </linearGradient>
+
+    <!-- Orange disc side wall -->
+    <linearGradient id="orangeBodyGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#a05608"/>
+      <stop offset="25%"  stop-color="#e09020"/>
+      <stop offset="55%"  stop-color="#f5b840"/>
+      <stop offset="80%"  stop-color="#d88018"/>
+      <stop offset="100%" stop-color="#904800"/>
+    </linearGradient>
+
+    <!-- Orange top face — slim shimmer at near edge, smooth fade toward far edge -->
+    <linearGradient id="orangeTopGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%"   stop-color="#fce070"/>
+      <stop offset="8%"   stop-color="#e09030"/>
+      <stop offset="25%"  stop-color="#c07018"/>
+      <stop offset="55%"  stop-color="#a05810"/>
+      <stop offset="100%" stop-color="#904808"/>
+    </linearGradient>
+
+    <!-- Warm yellow-orange outward glow for the smiley face -->
+    <filter id="faceGlow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur"/>
+      <feFlood flood-color="#fff5c0" flood-opacity="0.95" result="color"/>
+      <feComposite in="color" in2="blur" operator="in" result="glow"/>
+      <feMerge>
+        <feMergeNode in="glow"/>
+        <feMergeNode in="glow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Tapered ribbon stroke:
+       Both edges share the same two endpoints so the ribbon tapers to a 1px tip
+       at each end. Outer edge bows far left (ctrl x=-35), inner edge bows
+       slightly less far left (ctrl x=-12) → 15px gap at the apex, zero at tips.
+       Shape: starts top-right, sweeps behind cylinder to the left, curves
+       under the cylinder, exits lower-right. -->
+  <!--
+    Tapered ribbon — 45px wide through middle ~60%, tapers to a point at both tips.
+    Each edge is split into 2 cubic bezier segments meeting at the left apex,
+    so the edges run nearly parallel for the majority of the arc and only converge
+    at the very tips. All four junctions are C1-smooth (tangents align).
+
+    Outer edge: (280,180) → apex (-45,290) → end tip (440,395)
+    Inner edge: (440,395) → apex ( 0,290) → start tip (280,180)
+    Gap at apex: 0 − (−45) = 45 px ✓
+  -->
+  <!--
+    Inner lower control x raised from 0 → 47, so the inner edge tracks
+    the outer at ~45px gap all the way through the lower half, not just at the apex.
+    Formula: x(t) = 440*(1-t)³ + 3*47*(1-t)*t → gives x≈90 at t=0.5 (y≈358),
+    outer is at x≈44 there → gap ≈ 46px ✓ (vs ~6px before the fix).
+  -->
+  <!--
+    Outer apex moved from x=-45 → x=100 (≈2x less bendy).
+    Inner apex from x=0 → x=145 (maintains 45px gap).
+    Control points scaled accordingly; all junctions remain C1-smooth.
+  -->
+  <!-- Single smooth cubic bezier per edge — no junctions, no kinks.
+       Outer ctrl x=95, inner ctrl x=155 → 0.75*(155-95)=45px gap at midpoint.
+       Transform baked in from user's SVG editor. -->
+  <g id="ribbon" transform="translate(-85,-45) scale(1.05,1.17)">
+    <path d="M 280 180
+             C  95 175,  95 395, 440 395
+             C 155 395, 155 175, 280 180 Z"
+          fill="url(#arcGrad)"/>
+  </g>
+
+  <!--
+    THREE FLOATING DISCS — drawn bottom → middle → top (back to front)
+    Each disc = side-wall rect + top-face ellipse ONLY.
+    NO bottom-face ellipse — eliminates the dark crescent at the base of each layer.
+
+    Layout (cx=253, rx=108, ry=27):
+      Bot disc body: y 309 → 367   top cy=309
+      Gap: 291 → 309  (18 px)
+      Mid disc body: y 233 → 291   top cy=233
+      Gap: 215 → 233  (18 px)
+      Top disc body: y 157 → 215   top cy=157
+  -->
+
+  <!--
+    Each disc: bottom ellipse (SAME colour as side wall → no dark band) +
+               body rect (covers top half of bottom ellipse) +
+               top face ellipse (bright).
+    Draw order per disc: bottom-ellipse → rect → top-ellipse.
+    Draw order between discs: bottom disc → middle disc → top disc (back→front).
+  -->
+
+  <!-- BOTTOM BLUE DISC -->
+  <ellipse cx="253" cy="367" rx="108" ry="27" fill="url(#blueBodyGrad)"/>
+  <rect    x="145"  y="309" width="216" height="58" fill="url(#blueBodyGrad)"/>
+  <rect    x="145"  y="309" width="14"  height="58" fill="white" opacity="0.07"/>
+  <ellipse cx="253" cy="309" rx="108" ry="27" fill="url(#blueTopGrad)"/>
+
+  <!-- MIDDLE ORANGE DISC -->
+  <ellipse cx="253" cy="291" rx="108" ry="27" fill="url(#orangeBodyGrad)"/>
+  <rect    x="145"  y="233" width="216" height="58" fill="url(#orangeBodyGrad)"/>
+  <rect    x="145"  y="233" width="14"  height="58" fill="white" opacity="0.07"/>
+  <ellipse cx="253" cy="233" rx="108" ry="27" fill="url(#orangeTopGrad)"/>
+
+  <!-- TOP BLUE DISC -->
+  <ellipse cx="253" cy="215" rx="108" ry="27" fill="url(#blueBodyGrad)"/>
+  <rect    x="145"  y="157" width="216" height="58" fill="url(#blueBodyGrad)"/>
+  <rect    x="145"  y="157" width="14"  height="58" fill="white" opacity="0.07"/>
+  <ellipse cx="253" cy="157" rx="108" ry="27" fill="url(#blueTopGrad)"/>
+
+  <!--
+    SMILEY FACE on orange disc
+    Disc body centre ≈ y 262.
+    Eyes = circles at the two endpoints of the smile arc.
+  -->
+  <!--
+    Eyes centred in the visible side-wall of the orange disc.
+    Orange disc body: y=233→291. Top ellipse (cy=233, ry=27) fades out ~y=258.
+    Visible side-wall: roughly y=258→291, centre ≈ y=275.
+  -->
+  <g filter="url(#faceGlow)">
+    <path d="M 212 282 Q 253 300 294 282"
+          fill="none"
+          stroke="#a05608"
+          stroke-width="6"
+          stroke-linecap="round"/>
+    <circle cx="212" cy="282" r="11" fill="#a05608"/>
+    <circle cx="294" cy="282" r="11" fill="#a05608"/>
+    <circle cx="212" cy="282" r="4.5" fill="#ffe4a8" opacity="0.9"/>
+    <circle cx="294" cy="282" r="4.5" fill="#ffe4a8" opacity="0.9"/>
+  </g>
+
+</svg>

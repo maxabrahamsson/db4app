@@ -1,0 +1,63 @@
+config:
+  target: "ws://localhost:8787"  # override with --target
+  http:
+    http2: false  # Force HTTP/1.1 for proper WebSocket upgrade handshake
+  phases:
+    # Warm up phase - establish baseline
+    - duration: 30
+      arrivalRate: 10
+      name: "Warm up - 10 connections/sec"
+    # Ramp up phase - gradually increase load
+    - duration: 60
+      arrivalRate: 50
+      name: "Ramp up - 50 connections/sec"
+    # Sustained load - test steady state
+    - duration: 60
+      arrivalRate: 100
+      name: "Sustained load - 100 connections/sec"
+    # Peak load - push to limits
+    - duration: 30
+      arrivalRate: 200
+      name: "Peak load - 200 connections/sec"
+    # Cool down - gradual decrease
+    - duration: 30
+      arrivalRate: 50
+      name: "Cool down - 50 connections/sec"
+  processor: "./processors/connection-id.js"
+  plugins:
+    expect: {}
+    metrics-by-endpoint:
+      stripQueryString: true
+  ws:
+    # WebSocket specific configuration
+    subprotocols: []
+    headers:
+      Origin: "http://localhost:5173"
+
+scenarios:
+  - name: "Browser WebSocket Connection"
+    weight: 100
+    engine: ws
+    flow:
+      # Connect to WebSocket endpoint
+      - connect:
+          url: "/agent"
+      # Wait for WebSocket connection to establish
+      - think: 1
+      # Send agent_ready message with connection ID
+      # The relay expects this message to establish the connection
+      - send:
+          json:
+            type: "agent_ready"
+            connectionId: "{{ connectionId }}"
+      # Wait for connection_established response from relay
+      # (Relay sends this automatically after agent_ready)
+      - think: 2
+      # Keep connection alive with periodic messages
+      - think: 5
+      # Simulate connection staying open for a while (realistic usage)
+      - think: 30
+      # Simulate longer connection (2 minutes total)
+      - think: 90
+      # Close connection gracefully
+      - close: {}

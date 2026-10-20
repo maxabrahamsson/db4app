@@ -1,0 +1,305 @@
+name: Build Tauri Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g., 0.1.0)'
+        required: true
+        default: '0.1.0'
+  push:
+    tags:
+      - 'desktop-v*'
+
+# Code signing / notarization is optional. If the Apple secrets are not configured
+# (e.g. on forks), the app is built unsigned.
+env:
+  TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+  HAS_APPLE_CERT: ${{ secrets.APPLE_CERTIFICATE != '' }}
+
+permissions:
+  contents: write
+
+jobs:
+  build-macos:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        target: [aarch64-apple-darwin, x86_64-apple-darwin]
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+      
+      - name: Install dependencies (root)
+        run: npm ci
+      
+      - name: Install dependencies (relay-cli)
+        working-directory: packages/relay-cli
+        run: npm install
+      
+      - name: Install dependencies (relay-app)
+        working-directory: packages/relay-app
+        run: npm install
+      
+      - name: Update Tauri version
+        working-directory: packages/relay-app
+        run: |
+          # Determine version from tag or workflow input
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            VERSION="${{ github.event.inputs.version }}"
+          elif [[ "${{ github.ref }}" == refs/tags/desktop-v* ]]; then
+            # Extract version from tag (remove "desktop-v" prefix)
+            TAG_NAME="${{ github.ref_name }}"
+            VERSION="${TAG_NAME#desktop-v}"
+          else
+            # Fallback to default
+            VERSION="0.1.0"
+          fi
+          
+          echo "Setting Tauri version to: $VERSION"
+          
+          # Update tauri.conf.json using node to properly handle JSON
+          node -e "
+            const fs = require('fs');
+            const path = 'src-tauri/tauri.conf.json';
+            const config = JSON.parse(fs.readFileSync(path, 'utf8'));
+            config.version = '$VERSION';
+            fs.writeFileSync(path, JSON.stringify(config, null, 2) + '\n');
+          "
+          
+          echo "Updated tauri.conf.json version to $VERSION"
+      
+      - name: Setup code signing
+        if: env.HAS_APPLE_CERT == 'true'
+        env:
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          # Create variables file for Tauri
+          if [ -n "$APPLE_CERTIFICATE" ]; then
+            echo "$APPLE_CERTIFICATE" | base64 --decode > certificate.p12
+            security create-keychain -p "" build.keychain
+            security default-keychain -s build.keychain
+            security unlock-keychain -p "" build.keychain
+            security import certificate.p12 -k build.keychain -P "$APPLE_CERTIFICATE_PASSWORD" -T /usr/bin/codesign -T /usr/bin/productsign
+            security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "" build.keychain
+            
+            # Find the actual signing identity if APPLE_SIGNING_IDENTITY is a hash
+            if [[ "$APPLE_SIGNING_IDENTITY" =~ ^[0-9A-Fa-f]{40}$ ]]; then
+              echo "APPLE_SIGNING_IDENTITY looks like a certificate hash, finding full identity..."
+              FULL_IDENTITY=$(security find-identity -v -p codesigning build.keychain | grep "$APPLE_SIGNING_IDENTITY" | head -1 | sed 's/.*"\(.*\)".*/\1/')
+              if [ -n "$FULL_IDENTITY" ]; then
+                echo "FOUND_IDENTITY=$FULL_IDENTITY" >> $GITHUB_ENV
+                echo "Using signing identity: $FULL_IDENTITY"
+              else
+                echo "Warning: Could not find identity with hash $APPLE_SIGNING_IDENTITY"
+                echo "Available identities:"
+                security find-identity -v -p codesigning build.keychain
+              fi
+            else
+              echo "FOUND_IDENTITY=$APPLE_SIGNING_IDENTITY" >> $GITHUB_ENV
+            fi
+            
+            rm certificate.p12
+          fi
+      
+      - name: Build sidecar
+        working-directory: packages/relay-app
+        run: |
+          TAURI_TARGET_TRIPLE=${{ matrix.target }} npm run build:sidecar
+      
+      - name: Build Tauri app
+        working-directory: packages/relay-app
+        env:
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ env.FOUND_IDENTITY || secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+        run: |
+          # Unset empty signing variables so Tauri builds unsigned on forks
+          for v in APPLE_CERTIFICATE APPLE_CERTIFICATE_PASSWORD APPLE_SIGNING_IDENTITY APPLE_TEAM_ID APPLE_ID APPLE_PASSWORD TAURI_SIGNING_PRIVATE_KEY; do
+            if [ -z "${!v}" ]; then unset "$v"; fi
+          done
+          if [ -n "$APPLE_SIGNING_IDENTITY" ]; then
+            echo "Signing enabled"
+          else
+            echo "No Apple signing identity configured - building unsigned"
+          fi
+          npm run tauri build -- --target ${{ matrix.target }}
+      
+      - name: Upload macOS artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-${{ matrix.target }}
+          path: |
+            packages/relay-app/src-tauri/target/${{ matrix.target }}/release/bundle/dmg/*.dmg
+            packages/relay-app/src-tauri/target/${{ matrix.target }}/release/bundle/macos/*.app
+          if-no-files-found: error
+
+  build-windows:
+    runs-on: windows-latest
+    if: false  # Disabled for now
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+      
+      - name: Install dependencies (root)
+        run: npm ci
+      
+      - name: Install dependencies (relay-cli)
+        working-directory: packages/relay-cli
+        run: npm install
+      
+      - name: Install dependencies (relay-app)
+        working-directory: packages/relay-app
+        run: npm install
+      
+      - name: Build sidecar
+        working-directory: packages/relay-app
+        run: npm run build:sidecar
+      
+      - name: Build Tauri app
+        working-directory: packages/relay-app
+        run: npm run tauri build
+      
+      - name: Upload Windows artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-x64
+          path: |
+            packages/relay-app/src-tauri/target/release/bundle/msi/*.msi
+            packages/relay-app/src-tauri/target/release/bundle/nsis/*.exe
+          if-no-files-found: warn
+
+  build-linux:
+    runs-on: ubuntu-22.04
+    if: false  # Disabled for now
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+      
+      - name: Install Linux dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+      
+      - name: Install dependencies (root)
+        run: npm ci
+      
+      - name: Install dependencies (relay-cli)
+        working-directory: packages/relay-cli
+        run: npm install
+      
+      - name: Install dependencies (relay-app)
+        working-directory: packages/relay-app
+        run: npm install
+      
+      - name: Build sidecar
+        working-directory: packages/relay-app
+        run: npm run build:sidecar
+      
+      - name: Build Tauri app
+        working-directory: packages/relay-app
+        run: npm run tauri build
+      
+      - name: Upload Linux artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-x64
+          path: |
+            packages/relay-app/src-tauri/target/release/bundle/deb/*.deb
+            packages/relay-app/src-tauri/target/release/bundle/appimage/*.AppImage
+          if-no-files-found: warn
+
+  create-release:
+    needs: [build-macos]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
+    
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Determine tag name
+        id: tag
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            TAG="desktop-v${{ github.event.inputs.version }}"
+          else
+            TAG="${{ github.ref_name }}"
+          fi
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          echo "Tag name: $TAG"
+      
+      - name: Create tag if it doesn't exist (workflow_dispatch only)
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          TAG="${{ steps.tag.outputs.tag }}"
+          if ! git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "Creating tag $TAG"
+            git tag -a "$TAG" -m "Release $TAG"
+            git push origin "$TAG"
+          else
+            echo "Tag $TAG already exists"
+          fi
+      
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      
+      - name: Display structure
+        run: ls -R artifacts
+      
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+          name: Release ${{ steps.tag.outputs.tag }}
+          files: |
+            artifacts/**/*.dmg
+            artifacts/**/*.msi
+            artifacts/**/*.exe
+            artifacts/**/*.deb
+            artifacts/**/*.AppImage
+          draft: true
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+

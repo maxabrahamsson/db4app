@@ -1,0 +1,85 @@
+.system-overload-banner {
+  background-color: #FEF2F2; /* red-50 */
+  border-bottom: 1px solid #FEE2E2; /* red-100 */
+  color: #991B1B; /* red-800 */
+  padding: 12px 16px;
+  width: 100%;
+  position: relative;
+  z-index: 1000;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.system-overload-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 1280px;
+  margin: 0 auto;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.system-overload-icon {
+  font-size: 20px;
+}
+
+.system-overload-text {
+  flex: 1;
+  min-width: 300px;
+}
+
+.system-overload-text strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.system-overload-text p {
+  margin: 0;
+  font-size: 14px;
+  color: #B91C1C; /* red-700 */
+}
+
+.system-overload-action {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.system-overload-action p {
+  margin: 0;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.system-overload-button {
+  background-color: #DC2626; /* red-600 */
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  white-space: nowrap;
+}
+
+.system-overload-button:hover {
+  background-color: #B91C1C; /* red-700 */
+}
+
+@media (max-width: 640px) {
+  .system-overload-content {
+    flex-direction: column;
+    text-align: center;
+    gap: 12px;
+  }
+  
+  .system-overload-text {
+    min-width: auto;
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "name": "db4app-mcp-server",
+  "version": "0.1.9",
+  "description": "MCP server for db4app - enables LLMs to interact with browser-based Postgres databases via Model Context Protocol",
+  "type": "module",
+  "main": "./dist/index.js",
+  "bin": {
+    "mcp-server-db4app": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "esbuild src/index.js --bundle --platform=node --format=esm --outfile=dist/index.js --external:node:* --external:pg --external:pg-native",
+    "lint": "eslint src --ext .js",
+    "prepublishOnly": "npm run build",
+    "start": "node dist/index.js"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "postgres",
+    "pglite",
+    "wasm",
+    "browser-database",
+    "llm",
+    "ai"
+  ],
+  "author": "db4app",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/maxabrahamsson/db4app.git",
+    "directory": "packages/mcp-server-db4app"
+  },
+  "homepage": "https://github.com/maxabrahamsson/db4app",
+  "bugs": {
+    "url": "https://github.com/maxabrahamsson/db4app/issues"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.22.0",
+    "pg": "^8.11.3",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.2",
+    "eslint": "^9.39.1"
+  }
+}
